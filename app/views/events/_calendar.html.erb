@@ -12,17 +12,18 @@
       <%= date.day %>
       <ul>
         <% for event in events %>
-          <li>
-            <% if event.user == current_user %>
-              <span class="my"><b><%= link_to h(event.title), event %></b>
+          <% if event.user == current_user %>
+            <li class="my">
+              <b><%= link_to h(event.title), event %></b>
                 <small><%= link_to 'Edit', edit_event_path(event) %>/<%= link_to 'Delete',
-                                event, confirm: 'Are you sure?', method: :delete %><small>
-              </span>
-            <% else %>
+                                event, confirm: 'Are you sure?', method: :delete %></small>
+            </li>
+          <% else %>
+            <li>
               <b><%= link_to h(event.title), event %></b>
               of <b><%= event.user.email %></b>
-            <% end %>
-          </li>
+            </li>
+          <% end %>
         <% end %>
       </ul>
     <% end %>
