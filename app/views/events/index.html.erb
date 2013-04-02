@@ -1,32 +1,5 @@
-<%# @events = Event.this_month %>
-
-<div id="calendar">
-  <h2 id="month">
-    <%= link_to "<", :month => (@date.beginning_of_month-1).strftime("%Y/%m") %>
-    <%=h @date.strftime("%B %Y") %>
-    <%= link_to ">", :month => (@date.end_of_month+1).strftime("%Y/%m") %>
-  </h2>
-  <%= calendar_for(@events, :year => @date.year, :month => @date.month) do |calendar| %>
-    <%= calendar.head('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') %>
-    <%= calendar.day(:day_method => :shedule) do |date, events| %>
-      <%= date.day %>
-      <ul>
-        <% for event in events %>
-          <li>
-            <b><%= link_to h(event.title), event %></b>
-            <% if event.user == current_user %>
-              <small><%= link_to 'Edit', edit_event_path(event) %>/<%= link_to 'Delete',
-                                event, confirm: 'Are you sure?', method: :delete %><small>
-            <% else %>
-              of <b><%= event.user.email %></b>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-    <% end %>
-  <% end %>
-</div>
-
-<br />
-
-<%= link_to 'New Event', new_event_path %>
+<h1>Events Calendar</h1>
+<% if current_user %>
+  <%= link_to 'View only my Events', my_path %>
+<% end %>
+<%= render 'calendar' %>

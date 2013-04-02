@@ -15,13 +15,6 @@
 //= require_tree .
 
 
-
 $(function() {
-  $("#event_shedule").datepicker();
-
-  //$("#calendar_event_date").datepicker("option", "dateFormat", "dd/mm/yy" );
-  //$("#calendar_event_date").datepicker({ appendText: "(dd/mm/yy)" });
-
-  $("#event_shedule").datepicker("option", "dateFormat", "yy-mm-dd" );
-  //$("#calendar_event_date").datepicker({ appendText: "(yy-mm-dd)" });
+  $("#event_shedule").datepicker({dateFormat: 'yy-mm-dd'});
 });

@@ -5,12 +5,22 @@ class EventsController < ApplicationController
   # GET /events.json
   def index
     @events = Event.all
-
     @date = params[:month] ? Date.parse(params[:month]) : Date.today
 
-    if current_user
-      @user_events = Event.where(:user_id => current_user.id)
+    # if current_user
+    #  @user_events = Event.where(:user_id => current_user.id)
+    # end
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @events }
     end
+  end
+
+
+  def my
+    @events = Event.where(:user_id => current_user.id)
+    @date = params[:month] ? Date.parse(params[:month]) : Date.today
 
     respond_to do |format|
       format.html # index.html.erb

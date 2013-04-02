@@ -39,5 +39,6 @@ gem 'jquery-rails'
 
 gem 'devise'
 gem 'calendar_date_select'
+gem 'watu_table_builder', :require => "table_builder"
 gem 'ice_cube'
-gem "watu_table_builder", :require => "table_builder"
+gem 'activerecord-postgresql-adapter'

@@ -12,7 +12,7 @@ Calend::Application.routes.draw do
 
   root :to => 'events#index'
 
-  match 'my_events' => 'events#index#my=1'
+  match "my" => 'events#my'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
