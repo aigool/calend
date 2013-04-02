@@ -44,6 +44,10 @@ class EventsController < ApplicationController
   def new
     @event = Event.new
 
+    if params[:date]
+      @event.shedule = params[:date]
+    end
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @event }

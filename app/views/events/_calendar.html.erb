@@ -9,7 +9,7 @@
   <%= calendar_for(@events, :year => @date.year, :month => @date.month) do |calendar| %>
     <%= calendar.head('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') %>
     <%= calendar.day(:day_method => :shedule) do |date, events| %>
-      <%= date.day %>
+      <%= date.day %> <%= link_to '+', new_event_path(date: date) %>
       <ul>
         <% for event in events %>
           <% if event.user == current_user %>
