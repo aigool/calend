@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calend</title>
+  
+  <%= stylesheet_link_tag "http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css", 
+                          "application", :media => "all" %>  
+  <%= javascript_include_tag "application", "http://code.jquery.com/jquery-1.9.1.js", 
+                          "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+
+  <%= csrf_meta_tags %>
+
+</head>
+<body>
+
+  <div id="datepicker"></div>
+
+  <div id="container">
+  	<div id="user_nav">
+  		<%= render "shared/links" %>
+  	</div>
+
+    <%= yield %>
+
+  </div>
+
+</body>
+</html>

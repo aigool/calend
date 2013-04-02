@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  title: MyString
+  shedule: 2013-04-02
+  user: 
+
+two:
+  title: MyString
+  shedule: 2013-04-02
+  user: 
