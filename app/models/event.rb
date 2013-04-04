@@ -40,11 +40,12 @@ class Event < ActiveRecord::Base
 	end
 
 	# Every year repeated events that created till current month and have same month
-	yr = where(:repeat => 'yearly').where("MONTH(shedule) = ? ", date.month).till(date).user(user)
+	#yr = where(:repeat => 'yearly').where("MONTH(shedule) = ? ", date.month).till(date).user(user)
+	yr = where(:repeat => 'yearly').till(date).user(user)
 	y_repeats = []
 	for elem in(yr)
 	  if elem.shedule.day <= date.end_of_month.day
-	    elem.shedule = Date.new(date.year, date.month, elem.shedule.day)
+	    elem.shedule = Date.new(date.year, elem.shedule.month, elem.shedule.day)
 	  	y_repeats << elem
 	  end
 	end
