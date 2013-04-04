@@ -11,7 +11,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130401225104) do
+ActiveRecord::Schema.define(:version => 20130403160802) do
+
+  create_table "calendars", :force => true do |t|
+    t.string   "title"
+    t.text     "content"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.date     "date"
+    t.date     "event_date"
+  end
+
+  add_index "calendars", ["user_id"], :name => "index_calendars_on_user_id"
 
   create_table "events", :force => true do |t|
     t.string   "title"
@@ -19,9 +31,20 @@ ActiveRecord::Schema.define(:version => 20130401225104) do
     t.integer  "user_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "repeat"
   end
 
   add_index "events", ["user_id"], :name => "index_events_on_user_id"
+
+  create_table "posts", :force => true do |t|
+    t.string   "title"
+    t.text     "content"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "posts", ["user_id"], :name => "index_posts_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false

@@ -4,12 +4,10 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = Event.all
     @date = params[:month] ? Date.parse(params[:month]) : Date.today
-
-    # if current_user
-    #  @user_events = Event.where(:user_id => current_user.id)
-    # end
+    
+    #@events = Event.all
+    @events = Event.events_and_repeats(@date, nil)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -19,8 +17,9 @@ class EventsController < ApplicationController
 
 
   def my
-    @events = Event.where(:user_id => current_user.id)
     @date = params[:month] ? Date.parse(params[:month]) : Date.today
+    #@events = Event.where(:user_id => current_user.id)
+    @events = Event.events_and_repeats(@date, current_user.id)
 
     respond_to do |format|
       format.html # index.html.erb

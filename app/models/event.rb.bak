@@ -1,0 +1,68 @@
+class Event < ActiveRecord::Base
+  #require 'ice_cube'
+  #include IceCube
+
+  belongs_to :user
+
+  validates :title, :presence => true,
+                    :length => { :minimum => 5 }
+  validates :shedule, :presence => true
+
+  def self.events_and_repeats(date)
+    events_month = where(shedule:date.beginning_of_month..date.end_of_month,:repeat => [nil, 'none'])
+
+    # Every day repeated events
+    dr = where(:repeat => 'daily').where("shedule < ?", date.end_of_month)
+	d_repeats = []
+	for every_day_event in(dr)
+	  for day in(1..date.end_of_month.day)
+	    new_date = Date.new(date.year, date.month, day)
+	    if every_day_event.shedule <= new_date
+	      repeat_event = Marshal.load(Marshal.dump(every_day_event)) # deep_copy
+	      repeat_event.shedule = new_date
+	      d_repeats << repeat_event
+	    end
+	  end
+	end
+
+    # Выбираем все события, имеющие ежемесячный повтор, созданные до конца этого месяца
+    mr = where(:repeat => 'monthly').where("shedule <= ?", date.end_of_month)
+    m_repeats = []
+	# Чтобы показать их в этом месяце, меняем год и месяц на текущие, оставляем только день
+	# Если такое число есть в этом месяце (чтобы не попалось 31 февраля)
+	#mr.map!{ |elem| date.end_of_month.day >= elem.shedule.day ? 
+	#                  elem.shedule = Date.new(date.year, date.month, date.day) : elem }  
+	                  # как преобразовать из формата date в тот формат что сидит в элементе из базы? 
+
+	# What is difference between this operations?
+	#mr.map!{ |elem| elem.shedule = Date.new(date.year, date.month, date.day) }  
+	#for every_month_event in(mr)
+	#  if every_month_event.shedule.day <= date.end_of_month.day		
+	#    every_month_event.shedule = Date.new(date.year, date.month, every_month_event.shedule.day.to_s )
+	#  end
+	#end
+
+	for elem in(mr)
+	  if elem.shedule.day <= date.end_of_month.day
+	    elem.shedule = Date.new(date.year, date.month, elem.shedule.day)
+	  	m_repeats << elem
+	  end
+	end
+
+	# Выбираем все события, имеющие ежегодный повтор, созданные до конца этого месяца, свершающиеся в такой же месяц
+	yr = where(:repeat => 'yearly').where("shedule <= ? AND MONTH(shedule) = ? ", date.end_of_month, date.month)
+	y_repeats = []
+	# Делаем их для показа, меняем год на текущий
+	#y_repeats.map!{ |elem| Date.new(date.year, date.month, elem.shedule.day) <= date.end_of_month ? 
+	#					elem.shedule = Date.new(date.year, date.month, elem.shedule.day) : elem} 
+	for elem in(yr)
+	  if elem.shedule.day <= date.end_of_month.day
+	    elem.shedule = Date.new(date.year, date.month, elem.shedule.day)
+	  	y_repeats << elem
+	  end
+	end
+
+    return events_month + d_repeats + m_repeats + y_repeats
+  end
+
+end
