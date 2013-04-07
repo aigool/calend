@@ -27,7 +27,7 @@ class Event < ActiveRecord::Base
     no_repeat = where(:repeat => [nil], shedule: start_date..end_date).user(user)
 
     # Repeated events that created till current month
-    r_events = Event.where("shedule <= ?", end_date).user(user) #where("repeat IS NOT NULL")
+    r_events = Event.where("shedule <= ?", end_date).user(user).where("`repeat` IS NOT NULL")
     
     repeats = []
     r_events.each do |event|
