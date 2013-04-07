@@ -19,17 +19,6 @@ class Event < ActiveRecord::Base
   	return rule
   end
 
-  def self.schedule(date, repeat)
-  	new_schedule = Schedule.new(date) 
-    if Event.available_repeats.map{ |r| r.to_s.downcase }.include? (repeat ? repeat.downcase : nil)
-      rule = eval('Rule.'+repeat.downcase)
-      new_schedule.add_recurrence_rule rule
-      return new_schedule
-    else 
-      return nil
-    end
-  end
- 
   def self.events_with_repeats(date, user)
     start_date = date.beginning_of_month - 6.days
     end_date = date.end_of_month + 6.days
@@ -55,6 +44,17 @@ class Event < ActiveRecord::Base
     end
 
     return no_repeat + repeats
+  end
+
+  def self.schedule(date, repeat)
+    new_schedule = Schedule.new(date) 
+    if Event.available_repeats.map{ |r| r.to_s.downcase }.include? (repeat ? repeat.downcase : nil)
+      rule = eval('Rule.'+repeat.downcase)
+      new_schedule.add_recurrence_rule rule
+      return new_schedule
+    else 
+      return nil
+    end
   end
 
 end
