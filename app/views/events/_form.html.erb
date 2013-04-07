@@ -24,14 +24,17 @@
 
   <div class="field">
     <%= f.label :repeat %><br />
-    <%= repeat_types = ['none', 'daily', 'monthly', 'yearly'] 
-        f.select :repeat, repeat_types %>
+    <%= desc_and_rule = [['None', nil]]
+        #Event.available_repeats.each_index do |i| 
+        #  desc_and_rule << [Event.available_repeats[i].to_s, i]
+        #end
+        Event.available_repeats.each do |r| 
+          desc_and_rule << r.to_s
+        end
+        # Event.available_repeats.map{ |r| r.to_s}
+        f.select :repeat, desc_and_rule %> 
   </div>
 
-  <!--div class="field">
-    <%= f.label :user %><br />
-    <%= f.text_field :user %>
-  </div-->
   <div class="actions">
     <%= f.submit %>
   </div>

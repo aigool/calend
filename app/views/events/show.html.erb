@@ -11,8 +11,9 @@
 </p>
 
 <p>
-  <b>Repeat:</b>
-  <%= @event.repeat %>
+  <% if @event.repeat %>
+    <b>Repeat:</b> <%= @event.repeat %>
+  <% end %>
 </p>
 
 <p>

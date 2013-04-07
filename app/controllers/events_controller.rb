@@ -7,7 +7,7 @@ class EventsController < ApplicationController
     @date = params[:month] ? Date.parse(params[:month]) : Date.today
     
     #@events = Event.all
-    @events = Event.events_and_repeats(@date, nil)
+    @events = Event.events_with_repeats(@date, nil)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -19,7 +19,7 @@ class EventsController < ApplicationController
   def my
     @date = params[:month] ? Date.parse(params[:month]) : Date.today
     #@events = Event.where(:user_id => current_user.id)
-    @events = Event.events_and_repeats(@date, current_user.id)
+    @events = Event.events_with_repeats(@date, current_user.id)
 
     respond_to do |format|
       format.html # index.html.erb

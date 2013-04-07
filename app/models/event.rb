@@ -1,4 +1,6 @@
 class Event < ActiveRecord::Base
+  include IceCube
+  serialize :schedule, Hash
 
   belongs_to :user
 
@@ -6,51 +8,53 @@ class Event < ActiveRecord::Base
                     :length => { :minimum => 5 }
   validates :shedule, :presence => true
 
-  scope :till, lambda { |date| where("shedule <= ?", date.end_of_month ) }
-  scope :start, lambda { |date| where("shedule >= ?", date.beginning_of_month ) }
   scope :user, lambda { |user| user ? where(:user_id => user) : where("user_id IS NOT NULL") }
 
+  #before_save do
+  #  self.repeat = Event.schedule(self.shedule, Event.available_repeats[self.repeat.to_i] ).to_hash
+  #end
 
-  def self.events_and_repeats(date, user)
+  def self.available_repeats
+  	rule = [Rule.daily, Rule.weekly, Rule.monthly, Rule.yearly]
+  	return rule
+  end
+
+  def self.schedule(date, repeat)
+  	new_schedule = Schedule.new(date) 
+    if Event.available_repeats.map{ |r| r.to_s.downcase }.include? (repeat ? repeat.downcase : nil)
+      rule = eval('Rule.'+repeat.downcase)
+      new_schedule.add_recurrence_rule rule
+      return new_schedule
+    else 
+      return nil
+    end
+  end
+ 
+  def self.events_with_repeats(date, user)
+    start_date = date.beginning_of_month - 6.days
+    end_date = date.end_of_month + 6.days
+
     # Events that no repeat
-    no_repeat = where(:repeat => [nil, 'none']).start(date).till(date).user(user)
+    no_repeat = where(:repeat => [nil], shedule: start_date..end_date).user(user)
 
-    # Every day repeated events that created till current month
-    dr = where(:repeat => 'daily' ).till(date).user(user)
-	d_repeats = []
-	for every_day_event in(dr)
-	  for day in(1..date.end_of_month.day)
-	    new_date = Date.new(date.year, date.month, day)
-	    if every_day_event.shedule <= new_date
-	      repeat_event = Marshal.load(Marshal.dump(every_day_event)) # deep_copy
-	      repeat_event.shedule = new_date
-	      d_repeats << repeat_event
-	    end
-	  end
-	end
+    # Repeated events that created till current month
+    r_events = Event.where("shedule <= ?", end_date).user(user) #where("repeat IS NOT NULL")
+    
+    repeats = []
+    r_events.each do |event|
+      schedule = Event.schedule(event.shedule, event.repeat)
+      if schedule
+        schedule.occurrences(end_date).each do |elem|
+          if elem >= start_date
+            repeat_event = Marshal.load(Marshal.dump(event)) # deep_copy
+            repeat_event.shedule = elem
+            repeats << repeat_event
+          end
+        end
+      end
+    end
 
-    # Every month repeated events that created till current month
-    mr = where(:repeat => 'monthly' ).till(date).user(user)
-    m_repeats = []
-	for elem in(mr)
-	  if elem.shedule.day <= date.end_of_month.day
-	    elem.shedule = Date.new(date.year, date.month, elem.shedule.day)
-	  	m_repeats << elem
-	  end
-	end
-
-	# Every year repeated events that created till current month and have same month
-	#yr = where(:repeat => 'yearly').where("MONTH(shedule) = ? ", date.month).till(date).user(user)
-	yr = where(:repeat => 'yearly').till(date).user(user)
-	y_repeats = []
-	for elem in(yr)
-	  if elem.shedule.day <= date.end_of_month.day
-	    elem.shedule = Date.new(date.year, elem.shedule.month, elem.shedule.day)
-	  	y_repeats << elem
-	  end
-	end
-
-    return no_repeat + d_repeats + m_repeats + y_repeats
+    return no_repeat + repeats
   end
 
 end
